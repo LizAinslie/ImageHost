@@ -17,11 +17,11 @@ const credentials = (process.env.CDN_CREDS || '')
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index');
 });
 
 router.post('/upload', (req, res) => {
-  const cred = credentials.filter(x => x.secret === req.body.auth)[0];
+  const cred = credentials.filter(x => x.secret === req.header('x-lizzy-auth'))[0];
   if (!cred) return res.status(403).json({ error: 'forbidden' });
   
   let file = req.files?.file;
@@ -39,7 +39,7 @@ router.post('/upload', (req, res) => {
   } catch (_) {}
 
   file.mv(path.join(uploadsFolder, pathName)).then(() => {
-    res.json({ message: 'uploaded', file: pathName, fullPath });
+    res.json({ message: 'uploaded', file: pathName });
   });
 })
 
